@@ -4,13 +4,11 @@ import React, { useEffect, useState } from "react";
 import { AspectRatio } from "@radix-ui/themes";
 import { RxArrowLeft, RxArrowRight } from "react-icons/rx";
 
-const images = [
-  "https://images.unsplash.com/photo-1479030160180-b1860951d696?&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?&auto=format&fit=crop&w=1200&q=80",
-  "https://images.unsplash.com/photo-1491553895911-0055eca6402d?&auto=format&fit=crop&w=1200&q=80",
-];
+interface ImageSliderProps{
+  images: string[];
+}
 
-export default function ImageSlider() {
+const ImageSlider:React.FC<ImageSliderProps> = ({images}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Auto-slide effect
@@ -31,7 +29,7 @@ export default function ImageSlider() {
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto">
+    <div className="relative w-full md:max-w-4xl mx-auto md:min-w-2xl">
       <AspectRatio
         ratio={16 / 8}
         className="overflow-hidden rounded-2xl shadow-lg"
@@ -71,3 +69,4 @@ export default function ImageSlider() {
     </div>
   );
 }
+export default ImageSlider;
