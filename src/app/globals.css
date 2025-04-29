@@ -1,6 +1,7 @@
 @import "tailwindcss";
-@import "@radix-ui/themes/styles.css";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: dark --default, black --prefersdark, synthwave;
+}
 
 :root {
   --background: #ffffff;

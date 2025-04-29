@@ -1,9 +1,19 @@
-import React from 'react'
+import React from "react";
 
-const ImageList = () => {
-  return (
-    <div>2d-image-list</div>
-  )
+interface ImageListProps {
+  imglist: string[];
 }
 
-export default ImageList
+const ImageList: React.FC<ImageListProps> = ({ imglist }) => {
+  return (
+    <div className="w-full flex flex-col items-center">
+      {imglist.map((url, idx) => (
+        <div key={idx} className="w-full mb-6 md:max-w-4xl">
+          <img src={url} alt={`Image ${idx}`} />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default ImageList;

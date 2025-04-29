@@ -6,6 +6,12 @@ import { RxArrowRight, RxComponent2 } from "react-icons/rx";
 import React from "react";
 import ContactCard from "@/components/contact-card";
 
+const images = [
+  "https://images.unsplash.com/photo-1479030160180-b1860951d696?&auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?&auto=format&fit=crop&w=1200&q=80",
+  "https://images.unsplash.com/photo-1491553895911-0055eca6402d?&auto=format&fit=crop&w=1200&q=80",
+];
+
 const HomePage = () => {
   console.log("Home");
 
@@ -33,7 +39,7 @@ const HomePage = () => {
           </div>
         </div>
         <div className="w-full h-fit md:col-start-2 col-span-2 mt-2">
-          <ImageSlider />
+          <ImageSlider images={images} />
         </div>
       </div>
       {/* About */}

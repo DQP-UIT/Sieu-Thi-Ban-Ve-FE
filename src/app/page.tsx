@@ -1,12 +1,11 @@
-import Header from "@/components/header";
-import HomePage from "./home/page";
+import FengshuiPage from "./fengshui/page";
 
 export default function Home() {
   return (
     <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 font-[family-name:var(--font-geist-sans)]">
       {/* Main Content */}
-      <main className="flex flex-wrap gap-[32px] row-start-2 items-center sm:items-start w-full">
-        <HomePage />
+      <main className="flex flex-wrap gap-[32px] row-start-2 items-center sm:items-start w-full min-w-fit">
+        <FengshuiPage />
       </main>
 
       {/* Footer */}
