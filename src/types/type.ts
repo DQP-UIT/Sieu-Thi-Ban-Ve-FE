@@ -1,10 +1,10 @@
 export interface IProduct {
-  id?: number; 
+  id?: number;
   name: string;
   size: string;
   cost: number;
 
-  images: string[]; 
+  images: string[];
   images2D: string[];
   images3D: string[];
 
@@ -21,7 +21,7 @@ export interface IProduct {
 
   description: string;
 
-  files: string[]; 
+  files: string[];
 }
 
 export const mockProduct: IProduct = {
@@ -57,4 +57,37 @@ export const mockProduct: IProduct = {
   files: ["floorplan.pdf", "specifications.docx"],
 };
 
+export interface CalculationPackage {
+  name: "basic" | "standard" | "premium";
+  // Tên gói tính toán: cơ bản, tiêu chuẩn, cao cấp
 
+  roughConstructionCost: number;
+  // Đơn giá xây dựng phần thô (VNĐ/m²)
+
+  fullConstructionCost: number;
+  // Đơn giá xây dựng trọn gói (VNĐ/m²)
+
+  constructionCoefficient: number;
+  // Hệ số xây dựng tổng thể (dùng để nhân với diện tích)
+
+  foundationCost: number;
+  // Hệ số móng (tùy loại móng: đơn, cọc, băng...)
+
+  mezzanineCoefficient: number;
+  // Hệ số tính gác lửng (thường nhỏ hơn 1 vì không tính 100%)
+
+  basementCoefficient: number;
+  // Hệ số tính tầng hầm (thường lớn hơn 1 do chi phí cao)
+
+  elevatorCoefficient: number;
+  // Hệ số có thang máy (tăng thêm chi phí xây dựng)
+
+  rooftopCoefficient: number;
+  // Hệ số tum mái (tính phần tum nếu có)
+
+  gardenCoefficient?: number;
+  // Hệ số sân vườn (chỉ dùng cho biệt thự - Villa, có thể không có)
+
+  poolCost: number;
+  // Chi phí xây hồ bơi (nếu có, đơn giá tính theo m²)
+}

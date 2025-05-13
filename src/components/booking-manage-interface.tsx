@@ -1,46 +1,54 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import axios from "axios";
 
-interface IUser {
+interface IOrder {
   id: number;
-  fullName: string;
-  email: string;
-  role: string;
+  productId: number;
+  orderUserName: string;
+  orderPhoneNumber: string;
+  orderCity: string;
+  orderAdress: string;
   createdAt: string;
+  solved: boolean;
 }
 
 const PAGE_SIZE = 10;
 
-const UsersManageTable = () => {
-  const [users, setUsers] = useState<IUser[]>([]);
+const OrderTable = () => {
+  const [orders, setOrders] = useState<IOrder[]>([]);
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const {data: session} = useSession();
 
-  const filtered = users.filter((user) =>
-    [user.fullName, user.email, user.role].some((field) =>
-      field.toLowerCase().includes(filter.toLowerCase())
-    )
+  const filtered = orders.filter((o) =>
+    [o.orderUserName, o.orderPhoneNumber, o.orderCity, o.orderAdress]
+      .some((field) =>
+        field.toLowerCase().includes(filter.toLowerCase())
+      )
   );
 
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
-        params: { page: 1, pageSize: 1000 }, // lấy tất cả user trước
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/order`, {
+        params: { page: 1, pageSize: 10 * PAGE_SIZE },
+        headers: {
+          Authorization: `Bearer ${session?.user.accessToken}`
+        }
       })
       .then((res) => {
-        setUsers(res.data.data || []);
+        setOrders(res.data.data || []);
         setIsLoading(false);
       })
       .catch((err) => {
-        console.error("Failed to load users", err);
+        console.error("Failed to load orders", err);
         setIsLoading(false);
       });
   }, []);
@@ -48,10 +56,10 @@ const UsersManageTable = () => {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">User Management</h1>
+        <h1 className="text-2xl font-bold">Booking Management</h1>
         <input
           type="text"
-          placeholder="Search by name, email, or role..."
+          placeholder="Search by name, city or address..."
           className="input input-bordered w-1/3"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
@@ -63,34 +71,38 @@ const UsersManageTable = () => {
           <thead className="bg-base-200">
             <tr>
               <th>STT</th>
-              <th>Full Name</th>
-              <th>Email</th>
-              <th>Role</th>
+              <th>ID</th>
+              <th>Product ID</th>
+              <th>User Name</th>
+              <th>Phone Number</th>
+              <th>City</th>
+              <th>Address</th>
               <th>Created At</th>
+              <th>Solved</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={5} className="text-center py-4">
-                  Loading...
-                </td>
+                <td colSpan={9} className="text-center py-4">Loading...</td>
               </tr>
             ) : paginated.length > 0 ? (
-              paginated.map((user, index) => (
-                <tr key={user.id}>
+              paginated.map((order, index) => (
+                <tr key={order.id}>
                   <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
-                  <td>{user.fullName}</td>
-                  <td>{user.email}</td>
-                  <td className="capitalize">{user.role}</td>
-                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td>{order.id}</td>
+                  <td>{order.productId}</td>
+                  <td>{order.orderUserName}</td>
+                  <td>{order.orderPhoneNumber}</td>
+                  <td>{order.orderCity}</td>
+                  <td>{order.orderAdress}</td>
+                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                  <td>{order.solved ? "✅" : "❌"}</td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="text-center py-4">
-                  No users found.
-                </td>
+                <td colSpan={9} className="text-center py-4">No orders found.</td>
               </tr>
             )}
           </tbody>
@@ -121,4 +133,4 @@ const UsersManageTable = () => {
   );
 };
 
-export default UsersManageTable;
+export default OrderTable;
