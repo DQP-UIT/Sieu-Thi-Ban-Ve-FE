@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import ThemesController from "./ui/themes-controller";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -44,21 +45,27 @@ export default function Header() {
           ))}
         </nav>
 
-        {/* GitHub Button */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <a
-            href="https://github.com/radix-ui/primitives"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white text-sm border border-white/30 px-4 py-1.5 rounded-md hover:bg-white hover:text-black transition"
+        <div className="flex flex-wrap justify-between gap-4 items-center self-end">
+          {/* Login Button */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
           >
-            GitHub
-          </a>
-        </motion.div>
+            <a
+              href="/login"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white text-sm border border-white/30 px-4 py-1.5 rounded-md hover:bg-white hover:text-black transition"
+            >
+              Login
+            </a>
+          </motion.div>
+          {/* Theme controller */}
+          <motion.div>
+            <ThemesController />
+          </motion.div>
+        </div>
       </div>
     </header>
   );
