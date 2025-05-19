@@ -64,7 +64,7 @@ const assignSeasonalColors = (datasets: ColumnGraphDataset[]) => {
     ...seasonColors.winter, // Tháng 10-12
   ];
 
-  return datasets.map((ds, index) => ({
+  return datasets.map((ds) => ({
     ...ds,
     backgroundColor: colorMapping,
     borderColor: colorMapping.map(color => color.replace("0.5","1")),
@@ -74,7 +74,7 @@ const assignSeasonalColors = (datasets: ColumnGraphDataset[]) => {
 
 const ColumnGraph = ({ labels, datasets }: ColumnGraphProps) => {
   const updatedChartData = assignSeasonalColors(datasets);
-  console.log("Chart data1:", updatedChartData);
+  console.log("Chart data:", updatedChartData);
   
   const data = { labels, datasets: updatedChartData };
   const options = {
@@ -83,6 +83,13 @@ const ColumnGraph = ({ labels, datasets }: ColumnGraphProps) => {
       legend: { display: true },
       title: { display: true, text: "Biểu đồ doanh thu theo tháng" },
     },
+    scales: {
+      x: {
+        grid: {
+          offset: true
+        }
+      }
+    }
   };
 
   return (

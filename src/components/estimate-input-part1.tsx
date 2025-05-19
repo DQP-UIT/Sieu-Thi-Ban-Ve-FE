@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useEstimateFormStore } from "@/store/estimate-store";
+import { fetchConstructionPackagesBySelection } from "@/services/estimate.service";
 
 // prettier-ignore
 const diaDiemOptions = [
@@ -19,8 +20,13 @@ const loaiCongTrinhOptions = ["Nhà phố", "Biệt thự", "Nhà cấp 4"];
 const EstimateInput1 = () => {
   const { formData, updateFormData, showInput2 } = useEstimateFormStore();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const { diaDiem, loaiCongTrinh } = formData;
+
+    await fetchConstructionPackagesBySelection(diaDiem, loaiCongTrinh);
+
     showInput2();
     console.log("Submitted form data:", formData);
   };

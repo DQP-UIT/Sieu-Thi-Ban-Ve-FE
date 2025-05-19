@@ -21,22 +21,22 @@ interface ProductCategory {
 const productCategories: ProductCategory[] = [
   {
     name: "Basic House",
-    path: "/product/basehouse",
+    path: "/customer/product/basehouse",
     icon: <RiHome4Line className="w-5 h-5" />,
   },
   {
     name: "City House",
-    path: "/product/cityhouse",
+    path: "/customer/product/cityhouse",
     icon: <RiBuildingLine className="w-5 h-5" />,
   },
   {
     name: "Hotel",
-    path: "/product/hotel",
+    path: "/customer/product/hotel",
     icon: <RiHotelLine className="w-5 h-5" />,
   },
   {
     name: "Villa",
-    path: "/product/villa",
+    path: "/customer/product/villa",
     icon: <RiHome8Line className="w-5 h-5" />,
   },
 ];
@@ -125,7 +125,7 @@ export default function ProductLayout({
                 Contact our team for custom blueprint solutions.
               </p>
               <Link
-                href="/contact"
+                href="customer/contact"
                 className="btn btn-primary btn-sm w-full mt-3"
               >
                 Contact Us

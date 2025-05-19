@@ -1,73 +1,48 @@
 "use client";
 
-import Link from "next/link";
-import {
-  RiHome4Line,
-  RiBuildingLine,
-  RiHotelLine,
-  RiHome8Line,
-} from "react-icons/ri";
-
-// Product category cards that match your layout navigation
-const productCategories = [
-  {
-    name: "Basic House",
-    path: "/product/basehouse",
-    icon: <RiHome4Line className="w-8 h-8" />,
-    description:
-      "Affordable and practical house designs with essential features for comfortable living.",
-  },
-  {
-    name: "City House",
-    path: "/product/cityhouse",
-    icon: <RiBuildingLine className="w-8 h-8" />,
-    description:
-      "Modern urban designs optimized for city lots with space-efficient layouts.",
-  },
-  {
-    name: "Hotel",
-    path: "/product/hotel",
-    icon: <RiHotelLine className="w-8 h-8" />,
-    description:
-      "Professional hospitality blueprints from boutique hotels to large commercial properties.",
-  },
-  {
-    name: "Villa",
-    path: "/product/villa",
-    icon: <RiHome8Line className="w-8 h-8" />,
-    description:
-      "Luxury residential designs with premium features and elegant architectural elements.",
-  },
-];
+import ProductDetail from "@/components/design-interface";
+import { useSelectedProduct } from "@/store/product-store";
+import { IProduct } from "@/types/type";
+import { redirect } from "next/navigation";
 
 export default function ProductPage() {
-  return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6 mt-20">Design Blueprints Collection</h1>
-      <p className="text-lg mb-8">
-        Welcome to our comprehensive collection of house design blueprints.
-        Please select a category from the sidebar or below to explore our
-        designs.
-      </p>
+  const product = useSelectedProduct((p) => p.product);
+  if (product === null) {
+    redirect("/customer/product/basehouse");
+    return null;
+  }
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {productCategories.map((category) => (
-          <div key={category.path} className="card bg-base-100 shadow-lg">
-            <div className="card-body">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-primary">{category.icon}</span>
-                <h2 className="card-title">{category.name}</h2>
-              </div>
-              <p>{category.description}</p>
-              <div className="card-actions justify-end mt-4">
-                <Link href={category.path} className="btn btn-primary">
-                  Browse Designs
-                </Link>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+  return (
+    <div className="w-full mt-12">
+      <ProductDetail design={product} />
     </div>
   );
+}
+
+export function normalizeProducts(apiData: any[]): IProduct[] {
+  return apiData.map((item) => ({
+    id: Number(item.id) ?? undefined,
+    name: item.name ?? "",
+    size: item.size ?? "",
+    cost: Number(item.cost) ?? 0,
+
+    images: Array.isArray(item.images) ? item.images : [],
+    images2D: Array.isArray(item.images2D) ? item.images2D : [],
+    images3D: Array.isArray(item.images3D) ? item.images3D : [],
+
+    floor: Number(item.floor) ?? 0,
+    square: item.square ?? "",
+
+    userId: Number(item.userId) ?? 0,
+    style: item.style ?? "",
+    designedBy: item.designedBy ?? "",
+
+    numberBedRoom: Number(item.numberBedRoom) ?? 0,
+    frontAge: Number(item.frontAge) ?? 0,
+    productTypeId: Number(item.productTypeId) ?? 0,
+
+    description: item.description ?? "",
+
+    files: Array.isArray(item.files) ? item.files : [],
+  }));
 }

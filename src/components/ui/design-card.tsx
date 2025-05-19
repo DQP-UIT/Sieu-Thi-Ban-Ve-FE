@@ -1,17 +1,24 @@
 "use client";
 
-import Swal from "sweetalert2";
-import axios from "axios";
 import { IProduct } from "@/types/type";
 import DesignModal from "./design-modal";
+import { useSelectedProduct } from "@/store/product-store";
+import { useRouter } from "next/navigation";
+
 
 interface DesignCardProps {
   design: IProduct;
 }
 
 const DesignCard: React.FC<DesignCardProps> = ({ design }) => {
+  const setProduct = useSelectedProduct((p)=>p.setProduct)
+  const router = useRouter();
+  const handleOnClick = () => {
+    setProduct(design);
+    router.push('/customer/product')
+  }
   return (
-    <div className="card bg-base-100 w-72 md:w-96 shadow-sm">
+    <div className="card bg-base-300 w-72 md:w-96 shadow-sm hover:bg-blue-500/50">
       <figure>
         <img src={design.images2D[0]} alt={design.name} />
       </figure>
@@ -26,8 +33,11 @@ const DesignCard: React.FC<DesignCardProps> = ({ design }) => {
           {design.cost}
         </div>
         <div className="card-actions justify-end gap-4">
-          <button className="btn btn-soft btn-primary rounded-lg">
-            Buy Now
+          <button
+            className="btn btn-soft btn-primary rounded-lg"
+            onClick={handleOnClick}
+          >
+            Detail
           </button>
           <DesignModal design={design} />
         </div>
