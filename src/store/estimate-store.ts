@@ -32,6 +32,7 @@ interface EstimateFormStore {
     value: EstimateFormData[K]
   ) => void;
   resetFormData: () => void;
+  resetStore: () => void;
   showInput2: () => void;
   showOutput: () => void;
 }
@@ -59,6 +60,45 @@ const initialFormData: EstimateFormData = {
   sanVuon: "hơn 60% diện tích là cây xanh",
 };
 
+function normalizeAndValidateField<K extends keyof EstimateFormData>(
+  key: K,
+  value: any
+): EstimateFormData[K] {
+  const numberFields: (keyof EstimateFormData)[] = [
+    "dienTichDat",
+    "dienTichXayDungTang1",
+    "soTang",
+    "dienTichGacLung",
+    "dienTichTumMai",
+    "soDiemDungThangMay",
+    "dienTichTangHam",
+    "dienTichHoBoi",
+    "matTien",
+  ];
+
+  const booleanFields: (keyof EstimateFormData)[] = [
+    "thangMay",
+    "tangHam",
+    "hoBoi",
+  ];
+
+  if (numberFields.includes(key)) {
+    const num = Number(value);
+    return isNaN(num)
+      ? (null as EstimateFormData[K])
+      : (num as EstimateFormData[K]);
+  }
+
+  if (booleanFields.includes(key)) {
+    if (value === "true" || value === true) return true as EstimateFormData[K];
+    if (value === "false" || value === false)
+      return false as EstimateFormData[K];
+    return false as EstimateFormData[K];
+  }
+
+  return value;
+}
+
 export const useEstimateFormStore = create<EstimateFormStore>((set) => ({
   formData: initialFormData,
   isInput2Available: false,
@@ -66,14 +106,18 @@ export const useEstimateFormStore = create<EstimateFormStore>((set) => ({
   updateFormData: (name, value) =>
     set((state) => {
       if (!(name in state.formData)) return state;
+
+      const normalizedValue = normalizeAndValidateField(name, value);
+
       return {
         formData: {
           ...state.formData,
-          [name]: value,
+          [name]: normalizedValue,
         },
       };
     }),
   resetFormData: () => set({ formData: initialFormData }),
-  showInput2: () => set({ isInput2Available: true }),
-  showOutput: () => set({ isOutputAvailable: true }),
+  resetStore: () => set({ isInput2Available: false, isOutputAvailable: false }),
+  showInput2: () => set({ isInput2Available: true, isOutputAvailable: false }),
+  showOutput: () => set({ isOutputAvailable: true, isInput2Available: false }),
 }));

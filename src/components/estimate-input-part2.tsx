@@ -1,14 +1,16 @@
 "use client";
+import { useConstructionStore } from "@/store/estimate-calculating-store";
 import { useEstimateFormStore } from "@/store/estimate-store";
 import React, { useEffect } from "react";
 
 const EstimatePart2 = () => {
-  const { formData, updateFormData, showOutput, resetFormData } =
+  const { formData, updateFormData, showOutput, resetFormData, resetStore } =
     useEstimateFormStore();
-
+  const construction = useConstructionStore.getState();
   useEffect(() => {
     console.log("Dia Diem: ", formData.diaDiem);
     console.log("Cong Trinh: ", formData.loaiCongTrinh);
+    console.log("Cost Item data:", construction)
   }, []);
 
   const handleChange = (e: any) => {
@@ -18,6 +20,7 @@ const EstimatePart2 = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("data-input2", formData);
     showOutput();
   };
 
@@ -33,6 +36,7 @@ const EstimatePart2 = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="number"
+              min={0}
               name="dienTichDat"
               value={formData.dienTichDat ?? ""}
               onChange={handleChange}
@@ -41,6 +45,7 @@ const EstimatePart2 = () => {
             />
             <input
               type="number"
+              min={0}
               name="dienTichXayDungTang1"
               value={formData.dienTichXayDungTang1 ?? ""}
               onChange={handleChange}
@@ -55,6 +60,7 @@ const EstimatePart2 = () => {
               <input
                 type="number"
                 name="soTang"
+                min={0}
                 value={formData.soTang ?? ""}
                 onChange={handleChange}
                 placeholder="Số tầng"
@@ -63,6 +69,7 @@ const EstimatePart2 = () => {
             ) : (
               <input
                 type="number"
+                min={0}
                 name="dienTichGacLung"
                 value={formData.dienTichGacLung ?? ""}
                 onChange={handleChange}
@@ -85,6 +92,7 @@ const EstimatePart2 = () => {
 
             <input
               type="number"
+              min={0}
               name="dienTichTumMai"
               value={formData.dienTichTumMai ?? ""}
               onChange={handleChange}
@@ -112,6 +120,7 @@ const EstimatePart2 = () => {
             {formData.thangMay && (
               <input
                 type="number"
+                min={0}
                 name="soDiemDungThangMay"
                 value={formData.soDiemDungThangMay ?? ""}
                 onChange={handleChange}
@@ -139,6 +148,7 @@ const EstimatePart2 = () => {
             {formData.tangHam && (
               <input
                 type="number"
+                min={0}
                 name="dienTichTangHam"
                 value={formData.dienTichTangHam ?? ""}
                 onChange={handleChange}
@@ -166,6 +176,7 @@ const EstimatePart2 = () => {
             {formData.hoBoi && (
               <input
                 type="number"
+                min={0}
                 name="dienTichHoBoi"
                 value={formData.dienTichHoBoi ?? ""}
                 onChange={handleChange}
@@ -276,6 +287,9 @@ const EstimatePart2 = () => {
             </button>
             <button onClick={resetFormData} className="btn btn-outline px-8">
               Nhập lại
+            </button>
+            <button onClick={resetStore} className="btn btn-outline btn-secondary px-8">
+              Quay lại
             </button>
           </div>
         </div>

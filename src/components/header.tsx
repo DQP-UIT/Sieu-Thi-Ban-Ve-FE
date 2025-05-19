@@ -6,9 +6,9 @@ import ThemesController from "./ui/themes-controller";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "Fengshui", href: "/fengshui" },
-  { label: "Estimate", href: "/estimate" },
-  { label: "Product", href: "/product" },
+  { label: "Fengshui", href: "/customer/fengshui" },
+  { label: "Estimate", href: "/customer/estimate" },
+  { label: "Product", href: "/customer/product" },
 ];
 
 export default function Header() {

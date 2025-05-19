@@ -1,7 +1,11 @@
-import { CostItem, useConstructionStore } from "@/store/estimate-calculating-store";
+import {
+  CostItem,
+  PackageType,
+  useConstructionStore,
+} from "@/store/estimate-calculating-store";
 import { EstimateFormData } from "@/store/estimate-store";
 
-type EstimateResult = {
+export type EstimateResult = {
   foundationCost: number;
   roofCost: number;
   structureCost: number;
@@ -15,37 +19,17 @@ type EstimateResult = {
   totalCost: number;
 };
 
-export function getBasicEstimateResults(
-  formData: EstimateFormData
+type EstimateResultsByPackage = {
+  [key in PackageType]?: EstimateResult;
+};
+
+function calculateEstimate(
+  formData: EstimateFormData,
+  costItem: CostItem,
+  type: string
 ): EstimateResult {
-  const { data, selected } = useConstructionStore.getState();
-  const { city, type, package: pkg } = selected;
-
-  if (!city || !type || !pkg) {
-    return {
-      foundationCost: 0,
-      roofCost: 0,
-      structureCost: 0,
-      rawConstructionCost: 0,
-      finishingCost: 0,
-      totalCost: 0,
-    };
-  }
-
-  const costItem: CostItem | undefined = data[city]?.[type]?.[pkg];
-  if (!costItem) {
-    return {
-      foundationCost: 0,
-      roofCost: 0,
-      structureCost: 0,
-      rawConstructionCost: 0,
-      finishingCost: 0,
-      totalCost: 0,
-    };
-  }
-
-  // Phần móng (theo loại móng)
   const area = formData.dienTichXayDungTang1 ?? 0;
+
   let foundation = costItem.foundationCost;
   switch (formData.ketCauMong) {
     case "móng băng":
@@ -57,13 +41,11 @@ export function getBasicEstimateResults(
   }
   const foundationCost = foundation * area;
 
-  // Các phần còn lại tính thẳng theo diện tích
   const roofCost = (formData.dienTichTumMai ?? 0) * costItem.roofCost;
   const structureCost = (formData.soTang ?? 1) * area * costItem.structureCost;
   const rawConstructionCost = costItem.rawConstructionCost;
   const finishingCost = costItem.finishingCost;
 
-  // Các phần tùy chọn
   const gardenCost = ["c4", "villa"].includes(type)
     ? costItem.gardenCost ?? 0
     : 0;
@@ -97,4 +79,24 @@ export function getBasicEstimateResults(
     demolitionCost,
     totalCost,
   };
+}
+
+export function getAllEstimateResults(
+  formData: EstimateFormData
+): EstimateResultsByPackage {
+  const { selected, costItems } = useConstructionStore.getState();
+  const { type } = selected;
+
+  if (!type || !costItems) return {};
+
+  const results: EstimateResultsByPackage = {};
+
+  (["basic", "standard", "premium"] as PackageType[]).forEach((pkg) => {
+    const costItem = costItems[pkg];
+    if (costItem) {
+      results[pkg] = calculateEstimate(formData, costItem, type);
+    }
+  });
+
+  return results;
 }
