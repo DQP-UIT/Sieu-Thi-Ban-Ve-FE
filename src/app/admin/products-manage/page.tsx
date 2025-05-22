@@ -8,7 +8,7 @@ const ProductManagePage = () => {
   return (
     <div>
       <div>
-        <DesignsManageTable onView={onView} onDelete={onDelete} />
+        <DesignsManageTable />
       </div>
     </div>
   );

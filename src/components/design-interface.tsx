@@ -3,7 +3,6 @@ import { IProduct } from '@/types/type'
 import ImageSlider from './ui/image-slider';
 import DesignInfoTab from './ui/design-info-table';
 import ImageList from './ui/2d-image-list';
-import ContactCard from './contact-card';
 
 interface ProductDetailProps {
     design: IProduct;
@@ -38,9 +37,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({design}) => {
           Mô hình hoàn thành
         </div>
         <ImageList imglist={design.images2D} />
-      </div>
-      <div className='w-full'>
-        <ContactCard />
       </div>
     </div>
   );

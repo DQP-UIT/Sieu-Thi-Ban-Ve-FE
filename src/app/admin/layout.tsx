@@ -1,5 +1,7 @@
 "use client";
 
+import ThemesController from "@/components/ui/themes-controller";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -39,6 +41,11 @@ const adminMenus: AdminMenuItem[] = [
     path: "/admin/bookings-manage",
     icon: <RiCalendarCheckLine className="w-5 h-5" />,
   },
+  {
+    name: "Estimate Control",
+    path: "/admin/estimate",
+    icon: <RiCalendarCheckLine className="w-5 h-5" />,
+  },
 ];
 
 export default function AdminLayout({
@@ -54,14 +61,8 @@ export default function AdminLayout({
   }, [pathname]);
 
   return (
-    <div className="drawer lg:drawer-open">
-      <input
-        id="admin-drawer"
-        type="checkbox"
-        className="drawer-toggle"
-        checked={isDrawerOpen}
-        onChange={(e) => setIsDrawerOpen(e.target.checked)}
-      />
+    <div className="drawer md:drawer-open">
+      <input id="admin-drawer" type="checkbox" className="drawer-toggle" />
 
       {/* Page Content */}
       <div className="drawer-content flex flex-col">
@@ -73,11 +74,7 @@ export default function AdminLayout({
             className="btn btn-square btn-ghost"
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
           >
-            {isDrawerOpen ? (
-              <RiCloseLine className="w-6 h-6" />
-            ) : (
-              <RiMenuLine className="w-6 h-6" />
-            )}
+            <RiMenuLine className="w-6 h-6" />
           </label>
         </div>
 
@@ -93,6 +90,10 @@ export default function AdminLayout({
         <div className="min-h-full w-64 bg-base-200 p-4">
           <div className="mb-6 mt-20 flex items-center justify-between">
             <h2 className="text-xl font-bold">Admin Menu</h2>
+            {/* Theme controller */}
+              <motion.div>
+                <ThemesController />
+              </motion.div>
           </div>
 
           <ul className="menu menu-lg p-0 gap-2">
@@ -113,7 +114,7 @@ export default function AdminLayout({
             ))}
           </ul>
 
-          <div className="mt-auto pt-10">
+          {/* <div className="mt-auto pt-10">
             <div className="rounded-lg bg-base-100 p-4">
               <h3 className="font-semibold">Admin Support</h3>
               <p className="text-sm mt-1">
@@ -126,7 +127,7 @@ export default function AdminLayout({
                 Contact Support
               </Link>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
