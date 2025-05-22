@@ -1,17 +1,20 @@
 "use client";
 import { loginSchema } from "@/lib/schemas/loginSchema";
-import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const { data: session } = useSession();
+
+  console.log("session", session);
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -28,11 +31,21 @@ const LoginForm = () => {
         password: data.password,
         redirect: false,
       });
-      console.log("result", result);
-      console.log("data", session?.user);
-
       if (result?.error) {
         return;
+      } else {
+        console.log("data", session?.user);
+        switch (session?.user.role) {
+          case "admin":
+            router.push("/admin");
+            break;
+          case "receiptionist":
+            router.push("/receptionist");
+            break;
+          default:
+            router.push("/designer");
+            break;
+        }
       }
     } catch (error) {
       console.error(error);
