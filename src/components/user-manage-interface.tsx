@@ -4,15 +4,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import AddUserModal from "./add-user-modal";
+import { IUser } from "@/types/type";
 
-interface IUser {
-  id: number;
-  fullName: string;
-  email: string;
-  role: string;
-  dob: string;
-  activedDay: string;
-}
 
 const PAGE_SIZE = 10;
 
@@ -36,16 +29,16 @@ const UsersManageTable = () => {
 
   const fetchUser = () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/user/user/all`, {
         params: { page: 1, pageSize: 1000 },
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       })
       .then((res) => {
-        setUsers(res.data.data || []);
-        console.log("data users", res.data.data);
-        
+        setUsers(res.data || []);
+        console.log("data users", res.data);
+
         setIsLoading(false);
       })
       .catch((err) => {

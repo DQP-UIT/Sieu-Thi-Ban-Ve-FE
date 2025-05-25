@@ -35,7 +35,7 @@ const LoginForm = () => {
         return;
       } else {
         console.log("data", session?.user);
-        switch (session?.user.role) {
+        switch (session?.user.role.toString()) {
           case "admin":
             router.push("/admin");
             break;
