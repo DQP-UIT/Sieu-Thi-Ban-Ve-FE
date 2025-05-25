@@ -83,6 +83,54 @@ const DesignsManageTable = () => {
     });
   };
 
+  const handleOnAds = (id: number) => {
+    Swal.fire({
+      title: "Bạn có chắc muốn xóa bản thiết kế này?",
+      text: "Hành động này không thể hoàn tác!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+
+      try {
+        const res = await axios.post(`${API_URL}/facebook/post-product/${id}`);
+        console.log("stt", res.status);
+
+        const isSuccess = res.status === 200;
+
+        await Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: isSuccess ? "success" : "error",
+          title: isSuccess ? "Thành công" : "Lỗi",
+          text: isSuccess
+            ? "Đã post bài đăng thành công!"
+            : "Đã xảy ra lỗi khi đăng bài!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        if (isSuccess) fetchData(page);
+      } catch (error) {
+        console.error(error);
+
+        await Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Lỗi hệ thống",
+          text: "Không thể kết nối đến máy chủ!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
+
   const fetchData = async (pageNumber: number) => {
     try {
       setIsLoading(true);
@@ -182,7 +230,7 @@ const DesignsManageTable = () => {
                       ) : (
                         <button
                           className="btn btn-sm w-16 btn-error"
-                          onClick={() => handleOnDelete(product.id!)}
+                          onClick={() => handleOnAds(product.id!)}
                         >
                           Ads design
                         </button>

@@ -11,6 +11,8 @@ import {
   RiMenuLine,
 } from "react-icons/ri";
 import ThemesController from "@/components/ui/themes-controller";
+import Avatar from "@/components/ui/avatar";
+import { useSession } from "next-auth/react";
 
 interface MenuItem {
   name: string;
@@ -43,6 +45,8 @@ export default function ReceptionistLayout({
 }) {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const {data: session} = useSession();
+  const user = session?.user;
 
   useEffect(() => {
     setIsDrawerOpen(false);
@@ -60,7 +64,12 @@ export default function ReceptionistLayout({
       <div className="drawer-content flex flex-col">
         {/* Top Bar for mobile */}
         <div className="sticky top-0 z-10 flex items-center justify-between bg-base-100 px-4 py-2 shadow-md lg:hidden">
-          <h2 className="text-lg font-semibold">Receptionist Panel</h2>
+          {user ? (
+            <Avatar user={user} />
+          ) : (
+            <h2 className="text-lg font-semibold">Receptionist Panel</h2>
+          )}
+
           <label
             htmlFor="receptionist-drawer"
             className="btn btn-square btn-ghost"
