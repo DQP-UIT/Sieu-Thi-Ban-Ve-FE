@@ -3,7 +3,7 @@
 import Avatar from "@/components/ui/avatar";
 import ThemesController from "@/components/ui/themes-controller";
 import { motion } from "framer-motion";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,7 +25,7 @@ interface AdminMenuItem {
 const adminMenus: AdminMenuItem[] = [
   {
     name: "Dashboard",
-    path: "/admin",
+    path: "/admin/report",
     icon: <RiDashboardLine className="w-5 h-5" />,
   },
   {
@@ -97,7 +97,11 @@ export default function AdminLayout({
         <label htmlFor="admin-drawer" className="drawer-overlay"></label>
         <div className="min-h-full w-64 bg-base-200 p-4">
           <div className="mb-6 mt-20 flex items-center justify-between">
-            <h2 className="text-xl font-bold">Admin Menu</h2>
+            {user ? (
+              <Avatar user={user} />
+            ) : (
+              <h2 className="text-lg font-semibold">Admin Menu</h2>
+            )}
             {/* Theme controller */}
             <motion.div>
               <ThemesController />
@@ -121,21 +125,12 @@ export default function AdminLayout({
               </li>
             ))}
           </ul>
-
-          {/* <div className="mt-auto pt-10">
-            <div className="rounded-lg bg-base-100 p-4">
-              <h3 className="font-semibold">Admin Support</h3>
-              <p className="text-sm mt-1">
-                Need help with system setup or bugs?
-              </p>
-              <Link
-                href="/support"
-                className="btn btn-sm btn-primary w-full mt-3"
-              >
-                Contact Support
-              </Link>
-            </div>
-          </div> */}
+          <button
+            onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
+            className="btn btn-error px-4 btn-sm w-fit mt-6 absolute bottom-4 left-1/2"
+          >
+            Log out
+          </button>
         </div>
       </div>
     </div>

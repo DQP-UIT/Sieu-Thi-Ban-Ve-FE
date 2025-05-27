@@ -213,7 +213,7 @@ const DesignsManageTable = () => {
                     <td>{product.numberBedRoom}</td>
                     <td>{product.frontAge}m</td>
                     <td>{product.designedBy}</td>
-                    <td className="text-right space-y-2">
+                    <td className="text-right flex flex-col space-y-2">
                       <button
                         className="btn btn-sm w-16 btn-info"
                         onClick={() => handleOnView(product.id!)}

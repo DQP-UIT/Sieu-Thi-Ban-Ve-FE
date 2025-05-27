@@ -12,7 +12,7 @@ import {
 } from "react-icons/ri";
 import ThemesController from "@/components/ui/themes-controller";
 import Avatar from "@/components/ui/avatar";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 interface MenuItem {
   name: string;
@@ -45,7 +45,7 @@ export default function ReceptionistLayout({
 }) {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const {data: session} = useSession();
+  const { data: session } = useSession();
   const user = session?.user;
 
   useEffect(() => {
@@ -90,7 +90,12 @@ export default function ReceptionistLayout({
         <label htmlFor="receptionist-drawer" className="drawer-overlay"></label>
         <div className="min-h-full w-64 bg-base-200 p-4">
           <div className="mb-6 mt-20 flex items-center justify-between">
-            <h2 className="text-xl font-bold">Receptionist Menu</h2>
+            {user ? (
+              <Avatar user={user} />
+            ) : (
+              <h2 className="text-lg font-semibold">Receptionist Menu</h2>
+            )}
+
             <motion.div>
               <ThemesController />
             </motion.div>
@@ -113,6 +118,12 @@ export default function ReceptionistLayout({
               </li>
             ))}
           </ul>
+          <button
+            onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
+            className="btn btn-error px-4 btn-sm w-fit mt-6 absolute bottom-4 left-1/2"
+          >
+            Log out
+          </button>
         </div>
       </div>
     </div>

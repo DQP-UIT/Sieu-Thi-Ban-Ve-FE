@@ -1,9 +1,12 @@
-import React from 'react'
+import DashboardInterface from "@/components/dashboard-interface";
+import React from "react";
 
 const ReportPage = () => {
   return (
-    <div>ReportPage</div>
-  )
-}
+    <div>
+      <DashboardInterface />
+    </div>
+  );
+};
 
-export default ReportPage
+export default ReportPage;

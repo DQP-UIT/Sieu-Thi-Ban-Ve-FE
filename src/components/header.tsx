@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import ThemesController from "./ui/themes-controller";
+import { useRouter } from "next/navigation";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -12,6 +13,7 @@ const navLinks = [
 ];
 
 export default function Header() {
+  const router = useRouter();
   return (
     <header className="fixed top-0 z-50 w-full backdrop-blur bg-black/60 border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -52,14 +54,12 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <a
-              href="/login"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => router.push("/login")}
               className="text-white text-sm border border-white/30 px-4 py-1.5 rounded-md hover:bg-white hover:text-black transition"
             >
               Login
-            </a>
+            </button>
           </motion.div>
           {/* Theme controller */}
           <motion.div>

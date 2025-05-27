@@ -1,7 +1,42 @@
+"use client";
+
 import LoginForm from "@/components/login-form";
-import React from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 const LoginPage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "authenticated" && session) {
+      const role = session.user.role?.toString();
+      switch (role) {
+        case "admin":
+          router.push("/admin/");
+          break;
+        case "receptionist":
+          router.push("/receptionist/");
+          break;
+        default:
+          router.push("/designer/");
+          break;
+      }
+      router.refresh();
+    }
+  }, [status, session, router]);
+
+  if (status === "authenticated") {
+    return (
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+        <span className="loading loading-spinner loading-lg text-primary"></span>
+        <div>Please wait a minute!</div>
+      </div>
+    );
+  }
+
+  // Nếu chưa đăng nhập (unauthenticated), hiển thị form
   return (
     <div className="w-screen h-screen flex justify-center items-center">
       {/* Background image */}
