@@ -2,14 +2,10 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import AddUserModal from "./add-user-modal";
+import { IUser } from "@/types/type";
 
-interface IUser {
-  id: number;
-  fullName: string;
-  email: string;
-  role: string;
-  createdAt: string;
-}
 
 const PAGE_SIZE = 10;
 
@@ -18,6 +14,8 @@ const UsersManageTable = () => {
   const [filter, setFilter] = useState("");
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const { data: session } = useSession();
+  const accessToken = session?.user.accessToken;
 
   const filtered = users.filter((user) =>
     [user.fullName, user.email, user.role].some((field) =>
@@ -29,20 +27,29 @@ const UsersManageTable = () => {
 
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
 
-  useEffect(() => {
-    setIsLoading(true);
+  const fetchUser = () => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
-        params: { page: 1, pageSize: 1000 }, // lấy tất cả user trước
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/user/user/all`, {
+        params: { page: 1, pageSize: 1000 },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       })
       .then((res) => {
-        setUsers(res.data.data || []);
+        setUsers(res.data || []);
+        console.log("data users", res.data);
+
         setIsLoading(false);
       })
       .catch((err) => {
         console.error("Failed to load users", err);
         setIsLoading(false);
       });
+  };
+  useEffect(() => {
+    setIsLoading(true);
+    console.log("User", session);
+    fetchUser();
   }, []);
 
   return (
@@ -56,6 +63,7 @@ const UsersManageTable = () => {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
         />
+        <AddUserModal onSuccess={fetchUser} />
       </div>
 
       <div className="overflow-x-auto shadow rounded-lg">
@@ -66,6 +74,7 @@ const UsersManageTable = () => {
               <th>Full Name</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Date of birth</th>
               <th>Created At</th>
             </tr>
           </thead>
@@ -83,7 +92,8 @@ const UsersManageTable = () => {
                   <td>{user.fullName}</td>
                   <td>{user.email}</td>
                   <td className="capitalize">{user.role}</td>
-                  <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td>{new Date(user.dob).toLocaleDateString()}</td>
+                  <td>{new Date(user.activedDay).toLocaleDateString()}</td>
                 </tr>
               ))
             ) : (

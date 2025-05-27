@@ -1,22 +1,135 @@
 "use client";
 
+import { normalizeOneProduct } from "@/services/product.service";
+import { useSelectedProduct } from "@/store/product-store";
 import { IProduct } from "@/types/type";
 import axios from "axios";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-
-interface Props {
-  onView: (product: IProduct) => void;
-  onDelete: (productId: number) => void;
-}
+import Swal from "sweetalert2";
 
 const PAGE_SIZE = 10;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const DesignsManageTable: React.FC<Props> = ({ onView, onDelete }) => {
+const DesignsManageTable = () => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [filter, setFilter] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const { data: session, status } = useSession({ required: true });
+  const user = session?.user;
+  const setProduct = useSelectedProduct((p) => p.setProduct);
+  const router = useRouter();
+
+  const handleOnView = (id: number) => {
+    try {
+      axios.get(`${API_URL}/product/${id}`).then((res) => {
+        console.log("data", res.data);
+        setProduct(normalizeOneProduct(res.data));
+        user?.role === "admin"
+          ? router.push("/admin/product")
+          : router.push("/receptionist/product");
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleOnDelete = (id: number) => {
+    Swal.fire({
+      title: "Bạn có chắc muốn xóa bản thiết kế này?",
+      text: "Hành động này không thể hoàn tác!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+
+      try {
+        const res = await axios.delete(`${API_URL}/product/${id}`);
+        console.log("stt", res.status);
+
+        const isSuccess = res.status === 200;
+
+        await Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: isSuccess ? "success" : "error",
+          title: isSuccess ? "Thành công" : "Lỗi",
+          text: isSuccess ? "Đã xóa thành công!" : "Đã xảy ra lỗi khi xóa!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        if (isSuccess) fetchData(page);
+      } catch (error) {
+        console.error(error);
+
+        await Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Lỗi hệ thống",
+          text: "Không thể kết nối đến máy chủ!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
+
+  const handleOnAds = (id: number) => {
+    Swal.fire({
+      title: "Bạn có chắc muốn xóa bản thiết kế này?",
+      text: "Hành động này không thể hoàn tác!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+    }).then(async (result) => {
+      if (!result.isConfirmed) return;
+
+      try {
+        const res = await axios.post(`${API_URL}/facebook/post-product/${id}`);
+        console.log("stt", res.status);
+
+        const isSuccess = res.status === 200;
+
+        await Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: isSuccess ? "success" : "error",
+          title: isSuccess ? "Thành công" : "Lỗi",
+          text: isSuccess
+            ? "Đã post bài đăng thành công!"
+            : "Đã xảy ra lỗi khi đăng bài!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        if (isSuccess) fetchData(page);
+      } catch (error) {
+        console.error(error);
+
+        await Swal.fire({
+          toast: true,
+          position: "top-end",
+          icon: "error",
+          title: "Lỗi hệ thống",
+          text: "Không thể kết nối đến máy chủ!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+      }
+    });
+  };
 
   const fetchData = async (pageNumber: number) => {
     try {
@@ -28,9 +141,9 @@ const DesignsManageTable: React.FC<Props> = ({ onView, onDelete }) => {
         }
       );
 
-      setProducts(res.data.data); // res.data.data là danh sách sản phẩm
+      setProducts(res.data.data);
       setTotalPages(Math.ceil(res.data.data.length / PAGE_SIZE));
-      console.log("Total Pages", res.data.data.length); // trả về totalPages
+      console.log("Total Pages", res.data.data.length);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -100,19 +213,28 @@ const DesignsManageTable: React.FC<Props> = ({ onView, onDelete }) => {
                     <td>{product.numberBedRoom}</td>
                     <td>{product.frontAge}m</td>
                     <td>{product.designedBy}</td>
-                    <td className="text-right space-y-2">
+                    <td className="text-right flex flex-col space-y-2">
                       <button
                         className="btn btn-sm w-16 btn-info"
-                        onClick={() => onView(product)}
+                        onClick={() => handleOnView(product.id!)}
                       >
                         View
                       </button>
-                      <button
-                        className="btn btn-sm w-16 btn-error"
-                        onClick={() => onDelete(product.id!)}
-                      >
-                        Delete
-                      </button>
+                      {user?.role === "admin" ? (
+                        <button
+                          className="btn btn-sm w-16 btn-error"
+                          onClick={() => handleOnDelete(product.id!)}
+                        >
+                          Delete
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-sm w-16 btn-error"
+                          onClick={() => handleOnAds(product.id!)}
+                        >
+                          Ads design
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

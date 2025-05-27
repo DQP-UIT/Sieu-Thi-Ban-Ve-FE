@@ -1,17 +1,20 @@
 "use client";
 import { loginSchema } from "@/lib/schemas/loginSchema";
-import axios from "axios";
 import { signIn, useSession } from "next-auth/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 type LoginForm = z.infer<typeof loginSchema>;
 
 const LoginForm = () => {
   const [loading, setLoading] = useState(false);
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+
   const form = useForm<LoginForm>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -19,6 +22,23 @@ const LoginForm = () => {
       password: "",
     },
   });
+
+  // useEffect(() => {
+  //   if (status === "authenticated" && session) {
+  //     const role = session.user.role?.toString();
+  //     switch (role) {
+  //       case "admin":
+  //         router.push("/admin/");
+  //         break;
+  //       case "receptionist":
+  //         router.push("/receptionist/");
+  //         break;
+  //       default:
+  //         router.push("/designer/");
+  //         break;
+  //     }
+  //   }
+  // }, [status, session, router]);
 
   const onSubmit = async (data: LoginForm) => {
     try {
@@ -28,21 +48,32 @@ const LoginForm = () => {
         password: data.password,
         redirect: false,
       });
-      console.log("result", result);
-      console.log("data", session?.user);
-
       if (result?.error) {
+        setLoading(false);
+        await Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Tài khoản hoặc mật khẩu chưa chính xác!",
+          showConfirmButton: false,
+          timer: 2000,
+        });
         return;
+      } else {
+        if(session) setLoading(false);
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <div>
+      {loading && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+        </div>
+      )}
+
       <div className="hero min-h-screen">
         <div className="hero-content w-full md:max-w-1/2 flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">

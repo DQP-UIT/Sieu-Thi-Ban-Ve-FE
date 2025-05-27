@@ -4,15 +4,16 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { signOut } from "next-auth/react";
 import {
-  RiAdvertisementLine,
-  RiCalendarCheckLine,
-  RiMoneyDollarCircleLine,
+  RiListCheck2,
+  RiPencilRuler2Line,
+  RiUploadCloud2Line,
   RiMenuLine,
 } from "react-icons/ri";
 import ThemesController from "@/components/ui/themes-controller";
+import { useSession } from "next-auth/react";
 import Avatar from "@/components/ui/avatar";
-import { signOut, useSession } from "next-auth/react";
 
 interface MenuItem {
   name: string;
@@ -20,25 +21,25 @@ interface MenuItem {
   icon: React.ReactNode;
 }
 
-const receptionistMenus: MenuItem[] = [
+const designerMenus: MenuItem[] = [
   {
-    name: "Advertisement",
-    path: "/receptionist/advertisement",
-    icon: <RiAdvertisementLine className="w-5 h-5" />,
+    name: "Task",
+    path: "/designer/task",
+    icon: <RiListCheck2 className="w-5 h-5" />,
   },
   {
-    name: "Revenue",
-    path: "/receptionist/revenue-report",
-    icon: <RiMoneyDollarCircleLine className="w-5 h-5" />,
+    name: "Designs",
+    path: "/designer/design",
+    icon: <RiPencilRuler2Line className="w-5 h-5" />,
   },
   {
-    name: "Booking",
-    path: "/receptionist/booking-manage",
-    icon: <RiCalendarCheckLine className="w-5 h-5" />,
+    name: "Upload",
+    path: "/designer/upload-design",
+    icon: <RiUploadCloud2Line className="w-5 h-5" />,
   },
 ];
 
-export default function ReceptionistLayout({
+export default function DesignerLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -54,11 +55,7 @@ export default function ReceptionistLayout({
 
   return (
     <div className="drawer md:drawer-open">
-      <input
-        id="receptionist-drawer"
-        type="checkbox"
-        className="drawer-toggle"
-      />
+      <input id="designer-drawer" type="checkbox" className="drawer-toggle" />
 
       {/* Page Content */}
       <div className="drawer-content flex flex-col">
@@ -67,11 +64,10 @@ export default function ReceptionistLayout({
           {user ? (
             <Avatar user={user} />
           ) : (
-            <h2 className="text-lg font-semibold">Receptionist Panel</h2>
+            <h2 className="text-lg font-semibold">Designer Panel</h2>
           )}
-
           <label
-            htmlFor="receptionist-drawer"
+            htmlFor="designer-drawer"
             className="btn btn-square btn-ghost"
             onClick={() => setIsDrawerOpen(!isDrawerOpen)}
           >
@@ -87,22 +83,21 @@ export default function ReceptionistLayout({
 
       {/* Sidebar */}
       <div className="drawer-side z-20">
-        <label htmlFor="receptionist-drawer" className="drawer-overlay"></label>
+        <label htmlFor="designer-drawer" className="drawer-overlay"></label>
         <div className="min-h-full w-64 bg-base-200 p-4">
           <div className="mb-6 mt-20 flex items-center justify-between">
             {user ? (
               <Avatar user={user} />
             ) : (
-              <h2 className="text-lg font-semibold">Receptionist Menu</h2>
+              <h2 className="text-lg font-semibold">Designer Menu</h2>
             )}
-
             <motion.div>
               <ThemesController />
             </motion.div>
           </div>
 
           <ul className="menu menu-lg p-0 gap-2">
-            {receptionistMenus.map((item) => (
+            {designerMenus.map((item) => (
               <li key={item.path}>
                 <Link
                   href={item.path}

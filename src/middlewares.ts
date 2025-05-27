@@ -1,11 +1,16 @@
 import { auth } from "./auth";
 
-// Protect all routes under /api except /api/auth
 export default auth((req) => {
   const isApiRoute = req.nextUrl.pathname.startsWith("/api");
   const isAuthRoute = req.nextUrl.pathname.startsWith("/api/auth");
 
-  if (isApiRoute && !isAuthRoute && !req.auth) {
+  // Cho phép toàn bộ /api/auth/*
+  if (isAuthRoute) {
+    return;
+  }
+
+  // Chỉ check auth cho các API routes khác
+  if (isApiRoute && !req.auth) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 });

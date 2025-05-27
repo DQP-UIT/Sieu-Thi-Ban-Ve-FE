@@ -5,39 +5,13 @@ import DesignList from "@/components/design-list";
 import { IProduct } from "@/types/type";
 import { RiFilterLine } from "react-icons/ri";
 import axios from "axios";
-
-export function normalizeProducts(apiData: any[]): IProduct[] {
-  return apiData.map((item) => ({
-    id: Number(item.id) ?? undefined,
-    name: item.name ?? "",
-    size: item.size ?? "",
-    cost: Number(item.cost) ?? 0,
-
-    images: Array.isArray(item.images) ? item.images : [],
-    images2D: Array.isArray(item.images2D) ? item.images2D : [],
-    images3D: Array.isArray(item.images3D) ? item.images3D : [],
-
-    floor: Number(item.floor) ?? 0,
-    square: item.square ?? "",
-
-    userId: Number(item.userId) ?? 0,
-    style: item.style ?? "",
-    designedBy: item.designedBy ?? "",
-
-    numberBedRoom: Number(item.numberBedRoom) ?? 0,
-    frontAge: Number(item.frontAge) ?? 0,
-    productTypeId: Number(item.productTypeId) ?? 0,
-
-    description: item.description ?? "",
-
-    files: Array.isArray(item.files) ? item.files : [],
-  }));
-}
+import { normalizeProducts } from "@/services/product.service";
+import { useSession } from "next-auth/react";
 
 const ITEMS_PER_PAGE = 8;
 
 interface ProductsListProps {
-  productTypeId: number;
+  productTypeId?: number;
 }
 
 const ProductsList: React.FC<ProductsListProps> = ({ productTypeId }) => {
@@ -47,22 +21,25 @@ const ProductsList: React.FC<ProductsListProps> = ({ productTypeId }) => {
   const [bedroomFilter, setBedroomFilter] = useState("");
   const [floorFilter, setFloorFilter] = useState("");
   const [sortBy, setSortBy] = useState("price_asc");
+  const { data: session } = useSession();
+  const user = session?.user;
 
+  const customerUrl = `${process.env.NEXT_PUBLIC_API_URL}/product/product/filter?productTypeId=${productTypeId}`;
+  const designeUrl = `${process.env.NEXT_PUBLIC_API_URL}/product/user/${user?.id}`;
+  const productUrl = user ? designeUrl : customerUrl;
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setIsLoading(true);
-    axios
-      .get(
-        `${process.env.NEXT_PUBLIC_API_URL}/product/product/filter?productTypeId=${productTypeId}`
-      )
-      .then((res) => {
-        const data = normalizeProducts(res.data);
-        setTimeout(() => {
-          setDesigns(data);
-          setIsLoading(false);
-        }, 800);
-      });
+    console.log("session user",user);
+    
+    axios.get(productUrl.toString()).then((res) => {
+      const data = normalizeProducts(res.data);
+      setTimeout(() => {
+        setDesigns(data);
+        setIsLoading(false);
+      }, 800);
+    });
   }, []);
 
   // Filter & Sort
@@ -207,6 +184,6 @@ const ProductsList: React.FC<ProductsListProps> = ({ productTypeId }) => {
       )}
     </div>
   );
-}
+};
 
 export default ProductsList;
