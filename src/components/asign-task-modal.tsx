@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { IActor, IBooking, IBookingUpdate } from "@/types/type";
@@ -15,7 +15,9 @@ const AssignModal: React.FC<AssignModalProps> = ({
   designerList,
   onSuccess,
 }) => {
-  const [selectedDesigner, setSelectedDesigner] = useState<number | null>(null);
+  const [selectedDesigner, setSelectedDesigner] = useState<number | null>(
+    booking?.designer?.id ?? null
+  );
   
   const bookingUpdateObj: IBookingUpdate = {
     designer: selectedDesigner ?? null,
@@ -28,10 +30,6 @@ const AssignModal: React.FC<AssignModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
   const accessToken = session?.accessToken;
-
-  useEffect(() => {
-    setSelectedDesigner(booking?.designer?.id ?? null);
-  }, [booking]);
 
   const handleAssign = async () => {
     setIsSubmitting(true);

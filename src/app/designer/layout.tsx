@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { signOut } from "next-auth/react";
 import {
   RiListCheck2,
   RiPencilRuler2Line,
@@ -85,7 +86,11 @@ export default function DesignerLayout({
         <label htmlFor="designer-drawer" className="drawer-overlay"></label>
         <div className="min-h-full w-64 bg-base-200 p-4">
           <div className="mb-6 mt-20 flex items-center justify-between">
-            <h2 className="text-xl font-bold">Designer Menu</h2>
+            {user ? (
+              <Avatar user={user} />
+            ) : (
+              <h2 className="text-lg font-semibold">Designer Menu</h2>
+            )}
             <motion.div>
               <ThemesController />
             </motion.div>
@@ -108,6 +113,12 @@ export default function DesignerLayout({
               </li>
             ))}
           </ul>
+          <button
+            onClick={() => signOut({ redirect: true, callbackUrl: "/login" })}
+            className="btn btn-error px-4 btn-sm w-fit mt-6 absolute bottom-4 left-1/2"
+          >
+            Log out
+          </button>
         </div>
       </div>
     </div>

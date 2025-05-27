@@ -16,7 +16,7 @@ const Avatar: React.FC<avatarProps> = ({ user }) => {
   return (
     <div>
       <div className="avatar" onClick={handleOnClick}>
-        <div className="w-24 rounded-full">
+        <div className="w-16 rounded-full hover:cursor-pointer hover:ring hover:ring-primary hover:ring-offset-base-100 hover:ring-offset-2">
           <img
             src={
               user.avatar ??
