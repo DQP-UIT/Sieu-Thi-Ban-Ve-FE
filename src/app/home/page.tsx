@@ -2,9 +2,16 @@
 
 import ImageSlider from "@/components/ui/image-slider";
 import { RxArrowRight, RxComponent2, RxStar, RxHeart } from "react-icons/rx";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ContactCard from "@/components/contact-card";
 import { useRouter } from "next/navigation";
+import DesignCard from "@/components/ui/design-card";
+import { IProduct } from "@/types/type";
+import {
+  normalizeOneProduct,
+  normalizeProducts,
+} from "@/services/product.service";
+import axios from "axios";
 
 const images = [
   "https://i.pinimg.com/736x/0f/f0/ac/0ff0ac7f874321bcfda7fa4a10368ed5.jpg",
@@ -12,42 +19,49 @@ const images = [
   "https://i.pinimg.com/736x/90/e0/f6/90e0f69adb184557815264ba560dcb17.jpg",
 ];
 
-const recommendedDesigns = [
-  {
-    id: 1,
-    title: "Modern Villa Design",
-    image:
-      "https://i.pinimg.com/736x/0f/f0/ac/0ff0ac7f874321bcfda7fa4a10368ed5.jpg",
-    price: "2,500,000 VNĐ",
-    rating: 4.8,
-    likes: 156,
-  },
-  {
-    id: 2,
-    title: "Contemporary House",
-    image:
-      "https://i.pinimg.com/736x/b5/a0/b8/b5a0b8ec56aed5829fe9b99f7a7d6d0b.jpg",
-    price: "1,800,000 VNĐ",
-    rating: 4.6,
-    likes: 98,
-  },
-  {
-    id: 3,
-    title: "Luxury Mansion",
-    image:
-      "https://i.pinimg.com/736x/90/e0/f6/90e0f69adb184557815264ba560dcb17.jpg",
-    price: "5,200,000 VNĐ",
-    rating: 4.9,
-    likes: 234,
-  },
-];
-
 const HomePage = () => {
   const router = useRouter();
+  const [recommendedDesigns, setRecommendedDesigns] = useState<IProduct[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchRecommendedDesigns = async () => {
+      try {
+        setIsLoading(true);
+        const productTypeIds = [1, 2, 3];
+        const designs: IProduct[] = [];
+
+        // Fetch first product from each product type
+        for (const id of productTypeIds) {
+          try {
+            const response = await axios.get(
+              `${process.env.NEXT_PUBLIC_API_URL}/product/popular/{productTypeId}?productTypeId=${id}`
+            );
+
+            if (response.data) {
+              const normalizedProduct = normalizeOneProduct(response.data);
+              designs.push(normalizedProduct);
+            }
+          } catch (error) {
+            console.error(`Error fetching products for type ${id}:`, error);
+          }
+        }
+
+        setRecommendedDesigns(designs);
+      } catch (error) {
+        console.error("Error fetching recommended designs:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRecommendedDesigns();
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-8 md:py-16">
+      <section id="hero" className="container mx-auto px-4 py-8 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
           <div className="lg:col-span-1 space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold leading-tight">
@@ -62,14 +76,19 @@ const HomePage = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="btn btn-primary flex items-center gap-2 px-8 py-3">
-                <span>Get started</span>
-                <RxArrowRight size={20} />
-              </button>
-              <button className="btn btn-outline flex items-center gap-2 px-8 py-3">
-                <RxComponent2 size={20} />
-                <span>Contact us</span>
-              </button>
+              <a href="#recommend">
+                <button className="btn btn-primary flex items-center gap-2 px-8 py-3">
+                  <span>Get started</span>
+                  <RxArrowRight size={20} />
+                </button>
+              </a>
+
+              <a href="#contact">
+                <button className="btn btn-outline flex items-center gap-2 px-8 py-3">
+                  <RxComponent2 size={20} />
+                  <span>Contact us</span>
+                </button>
+              </a>
             </div>
           </div>
 
@@ -80,7 +99,10 @@ const HomePage = () => {
       </section>
 
       {/* About Section */}
-      <section className="bg-primary-content text-neutral rounded-2xl py-16">
+      <section
+        id="about"
+        className="bg-primary-content text-neutral rounded-2xl py-16"
+      >
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">About Us</h2>
@@ -127,7 +149,7 @@ const HomePage = () => {
       </section>
 
       {/* Recommended Section */}
-      <section className="py-16">
+      <section id="recommend" className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
@@ -139,52 +161,33 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recommendedDesigns.map((design) => (
-              <div
-                key={design.id}
-                className="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow"
-              >
-                <figure className="h-48 overflow-hidden">
-                  <img
-                    src={design.image}
-                    alt={design.title}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </figure>
-                <div className="card-body">
-                  <h3 className="card-title text-lg">{design.title}</h3>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <RxStar className="text-yellow-500" />
-                      <span>{design.rating}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <RxHeart className="text-red-500" />
-                      <span>{design.likes}</span>
-                    </div>
-                  </div>
-                  <div className="card-actions justify-between items-center mt-4">
-                    <span className="text-xl font-bold text-blue-600">
-                      {design.price}
-                    </span>
-                    <button className="btn btn-primary btn-sm">
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <span className="loading loading-spinner loading-lg"></span>
+            </div>
+          ) : (
+            <div className="flex flex-wrap justify-center gap-8">
+              {recommendedDesigns.map((design) => (
+                <DesignCard key={design.id} design={design} />
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
-            <button className="btn btn-outline btn-lg" onClick={()=>{router.push('/customer/product')}}>View All Designs</button>
+            <button
+              className="btn btn-outline btn-lg"
+              onClick={() => {
+                router.push("/customer/product");
+              }}
+            >
+              View All Designs
+            </button>
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section className="bg-neutral py-16">
+      <section id="contact" className="bg-neutral py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">

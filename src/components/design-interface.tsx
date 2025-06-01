@@ -10,13 +10,16 @@ interface ProductDetailProps {
 const ProductDetail: React.FC<ProductDetailProps> = ({design}) => {
   return (
     <div className="w-full">
-      <div className="flex flex-wrap md:grid md:grid-cols-3">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-8">
         <div className="col-span-2 col-start-1">
           <ImageSlider images={design.images2D} />
         </div>
-        <div className="col-start-3 font-sans">
-          <div className='text-2xl font-bold'>Mô tả</div>
-          <div className='text-xl font-normal'>{design.description}</div>
+        <div className="col-start-3 font-sans p-4">
+          <div className="text-2xl font-bold">Mô tả</div>
+          <div
+            className="text-xl font-normal leading-relaxed prose max-w-none"
+            dangerouslySetInnerHTML={{ __html: design.description }}
+          />
         </div>
       </div>
       {/* Thông số */}
