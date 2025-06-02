@@ -7,10 +7,7 @@ import ContactCard from "@/components/contact-card";
 import { useRouter } from "next/navigation";
 import DesignCard from "@/components/ui/design-card";
 import { IProduct } from "@/types/type";
-import {
-  normalizeOneProduct,
-  normalizeProducts,
-} from "@/services/product.service";
+import { normalizeOneProduct } from "@/services/product.service";
 import axios from "axios";
 
 const images = [
@@ -187,7 +184,7 @@ const HomePage = () => {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="bg-neutral py-16">
+      <section id="contact" className="bg-neutral py-16 rounded-2xl">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">

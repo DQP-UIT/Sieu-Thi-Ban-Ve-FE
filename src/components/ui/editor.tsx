@@ -15,20 +15,42 @@ const MyEditor: React.FC<MyEditorProps> = ({
   onChange,
   height = 300,
 }) => {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="w-full">
       <Editor
-        apiKey="no-api-key"
+        apiKey="qagffr3pkuv17a8on1afax661irst1hbr4e6tbv888sz91jc"
         value={value}
         onEditorChange={(newValue) => onChange(newValue)}
         init={{
-          height,
-          menubar: false,
+          height: 500,
+          menubar: true,
           statusbar: false,
           plugins: [
-            "advlist autolink lists link image charmap preview anchor",
-            "searchreplace visualblocks code fullscreen",
-            "insertdatetime media table paste help wordcount",
+            "advlist",
+            "autolink",
+            "lists",
+            "link",
+            "image",
+            "charmap",
+            "preview",
+            "anchor",
+            "searchreplace",
+            "visualblocks",
+            "code",
+            "fullscreen",
+            "insertdatetime",
+            "media",
+            "table",
+            "help",
+            "wordcount",
           ],
           toolbar:
             "undo redo | bold italic underline | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent | link image | removeformat",
@@ -39,5 +61,6 @@ const MyEditor: React.FC<MyEditorProps> = ({
     </div>
   );
 };
+
 
 export default MyEditor;
