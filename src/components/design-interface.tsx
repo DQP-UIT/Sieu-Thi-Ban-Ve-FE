@@ -3,6 +3,12 @@ import { IProduct } from '@/types/type'
 import ImageSlider from './ui/image-slider';
 import DesignInfoTab from './ui/design-info-table';
 import ImageList from './ui/2d-image-list';
+import SketchfabViewerList from './ui/3d-model-list';
+
+const modelIds = [
+  "798ffaeadacf4e08a2665785422fb45d",
+  "9dc9d936a1bf49d18925bd42d8b92552",
+];
 
 interface ProductDetailProps {
     design: IProduct;
@@ -40,6 +46,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({design}) => {
           Mô hình hoàn thành
         </div>
         <ImageList imglist={design.images2D} />
+      </div>
+      {/* Model 3D */}
+      <div className="w-full md:mt-10">
+        <div className="text-2xl font-bold md:mb-4 mb-2">Mô hình 3D</div>
+        <SketchfabViewerList modelIds={modelIds} />
       </div>
     </div>
   );

@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import MyEditor from "./ui/editor";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { AiOutlineFile, AiOutlineClose } from "react-icons/ai";
+import Upload3DModel from "./sketchfab-uploader";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -37,24 +39,76 @@ function DropzoneField({
   multiple = false,
 }: {
   onDrop: (files: File[]) => void;
-  placeholder: String;
+  placeholder: string;
   multiple?: boolean;
 }) {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const handleDrop = (acceptedFiles: File[]) => {
+    const updatedFiles = multiple
+      ? [...selectedFiles, ...acceptedFiles]
+      : acceptedFiles;
+
+    setSelectedFiles(updatedFiles);
+    onDrop(updatedFiles);
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== indexToRemove);
+    setSelectedFiles(updatedFiles);
+    onDrop(updatedFiles);
+  };
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple,
-    onDrop,
+    onDrop: handleDrop,
   });
 
   return (
-    <div
-      {...getRootProps()}
-      className="border border-dashed border-gray-400 p-4 rounded cursor-pointer hover:border-primary transition text-center"
-    >
-      <input {...getInputProps()} />
-      {isDragActive ? (
-        <p className="text-primary">Drop files here...</p>
-      ) : (
-        <p>{placeholder}</p>
+    <div>
+      <div
+        {...getRootProps()}
+        className={`border border-dashed rounded p-4 text-center cursor-pointer transition
+          ${
+            isDragActive
+              ? "border-primary bg-blue-50"
+              : "border-gray-400 hover:border-primary"
+          }`}
+      >
+        <input {...getInputProps()} />
+        {isDragActive ? (
+          <p className="text-primary">Thả file vào đây...</p>
+        ) : (
+          <p>{placeholder}</p>
+        )}
+      </div>
+
+      {selectedFiles.length > 0 && (
+        <div className="mt-3 space-y-2 text-sm">
+          <p className="text-green-600 font-medium">Đã chọn:</p>
+          <ul className="space-y-1">
+            {selectedFiles.map((file, index) => (
+              <li
+                key={index}
+                className="flex items-center justify-between bg-primary-content max-w-40 sm:max-w-36 rounded p-2"
+              >
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <AiOutlineFile className="text-blue-500 flex-shrink-0" />
+                  <span className="text-primary truncate block">
+                    {file.name}
+                  </span>
+                </div>
+                <button
+                  onClick={() => removeFile(index)}
+                  className="text-red-500 hover:text-red-700 flex-shrink-0"
+                  title="Xoá file này"
+                >
+                  <AiOutlineClose />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   );
@@ -190,6 +244,7 @@ export default function ProductUploadComponent() {
       <Controller
         control={control}
         name="description"
+        defaultValue=""
         render={({ field }) => (
           <div>
             <label className="font-semibold mb-1 block">Description</label>
@@ -224,14 +279,21 @@ export default function ProductUploadComponent() {
       <Controller
         control={control}
         name="images3D"
-        render={() => (
-          <DropzoneField
-            multiple
-            onDrop={(files) => setValue("images3D", files)}
-            placeholder={"Uploading 3D images of product here!"}
-          />
+        render={({ field }) => (
+          <div className="space-y-2">
+            <label className="font-semibold block">Sketchfab Model</label>
+            <Upload3DModel
+              onUploadSuccess={(uid) => setValue("images3D", uid)}
+            />
+            {field.value && (
+              <p className="text-green-600 text-sm">
+                Đã tải lên: UID {field.value}
+              </p>
+            )}
+          </div>
         )}
       />
+
       <Controller
         control={control}
         name="files"
