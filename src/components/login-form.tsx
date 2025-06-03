@@ -59,10 +59,12 @@ const LoginForm = () => {
         });
         return;
       } else {
-        if(session) setLoading(false);
+        if (session) setLoading(false);
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      router.refresh();
     }
   };
 

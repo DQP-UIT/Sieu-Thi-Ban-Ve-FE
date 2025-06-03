@@ -36,6 +36,10 @@ export async function POST(req: NextRequest) {
     const uploadForm = new FormDataNode();
     uploadForm.append("modelFile", createReadStream(tmpPath));
     uploadForm.append("name", name);
+    uploadForm.append("isPublished", "true");
+    uploadForm.append("description", "Uploaded via API");
+    uploadForm.append("tags", "api,3d,react");
+    uploadForm.append("license", "by"); 
 
     const sketchfabRes = await axios.post(
       "https://api.sketchfab.com/v3/models",

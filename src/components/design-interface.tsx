@@ -48,10 +48,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({design}) => {
         <ImageList imglist={design.images2D} />
       </div>
       {/* Model 3D */}
-      <div className="w-full md:mt-10">
-        <div className="text-2xl font-bold md:mb-4 mb-2">Mô hình 3D</div>
-        <SketchfabViewerList modelIds={modelIds} />
-      </div>
+      {design.images3D && (
+        <div className="w-full md:mt-10">
+          <div className="text-2xl font-bold md:mb-4 mb-2">Mô hình 3D</div>
+          <SketchfabViewerList modelIds={design.images3D} />
+        </div>
+      )}
     </div>
   );
 }
