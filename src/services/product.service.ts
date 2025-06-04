@@ -71,7 +71,7 @@ export const normalizeOneProduct = (apiResponse: APIResponse): IProduct => {
   const { data } = apiResponse;
 
   return {
-    id: data.id,
+    id: Number(data.id) ?? undefined,
     name: data.name,
     size: data.size,
     cost: data.cost,

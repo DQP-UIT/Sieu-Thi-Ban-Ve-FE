@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, FormEvent } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -56,7 +58,7 @@ const ContactCard = () => {
 
   return (
     <div>
-      <div className="hero bg-base-200 min-h-screen">
+      <div className="hero bg-base-200 rounded-2xl min-h-screen">
         <div className="hero-content flex-col lg:flex-row-reverse">
           <div className="text-center lg:text-left">
             <h1 className="text-5xl font-bold">Contact us now!</h1>

@@ -30,9 +30,13 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <SessionProvider>
-          {children}
-
-          <ChatWidget />
+          <div className="min-h-screen">
+            <div className="container mx-auto">
+              <div className="min-h-screen flex flex-col justify-center">
+                {children}
+              </div>
+            </div>
+          </div>
         </SessionProvider>
       </body>
     </html>
