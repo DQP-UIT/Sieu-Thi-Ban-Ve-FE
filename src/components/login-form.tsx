@@ -59,12 +59,11 @@ const LoginForm = () => {
         });
         return;
       } else {
+        router.refresh();
         if (session) setLoading(false);
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      router.refresh();
     }
   };
 
@@ -121,7 +120,7 @@ const LoginForm = () => {
                     onClick={() => signIn("google")}
                   >
                     Login with Google
-                  </button>
+                  </button> 
                 </fieldset>
               </form>
             </div>

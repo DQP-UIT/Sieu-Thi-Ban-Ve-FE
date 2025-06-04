@@ -6,7 +6,6 @@ import { useSession } from "next-auth/react";
 import AddUserModal from "./add-user-modal";
 import { IUser } from "@/types/type";
 
-
 const PAGE_SIZE = 10;
 
 const UsersManageTable = () => {
@@ -37,8 +36,6 @@ const UsersManageTable = () => {
       })
       .then((res) => {
         setUsers(res.data || []);
-        console.log("data users", res.data);
-
         setIsLoading(false);
       })
       .catch((err) => {
@@ -48,7 +45,6 @@ const UsersManageTable = () => {
   };
   useEffect(() => {
     setIsLoading(true);
-    console.log("User", session);
     fetchUser();
   }, []);
 
