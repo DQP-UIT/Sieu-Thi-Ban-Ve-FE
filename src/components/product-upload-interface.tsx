@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useDropzone } from "react-dropzone";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { AiOutlineFile, AiOutlineClose } from "react-icons/ai";
 import Upload3DModel from "./sketchfab-uploader";
+import { useSession } from "next-auth/react";
 
 const schema = z.object({
   name: z.string().min(1),
@@ -124,6 +125,13 @@ export default function ProductUploadComponent() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      setValue("userId", Number(session.user.id));
+    }
+  }, [session?.user?.id]);
 
   const onSubmit = async (data: FormData) => {
     const formData = new FormData();
@@ -199,12 +207,6 @@ export default function ProductUploadComponent() {
         <input
           {...register("square")}
           placeholder="Square"
-          className="input input-bordered w-full"
-        />
-        <input
-          type="number"
-          {...register("userId")}
-          placeholder="User ID"
           className="input input-bordered w-full"
         />
 
