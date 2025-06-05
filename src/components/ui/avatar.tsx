@@ -1,4 +1,5 @@
 import { User } from "next-auth";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 interface avatarProps {
@@ -17,11 +18,14 @@ const Avatar: React.FC<avatarProps> = ({ user }) => {
     <div>
       <div className="avatar" onClick={handleOnClick}>
         <div className="w-16 rounded-full hover:cursor-pointer hover:ring hover:ring-primary hover:ring-offset-base-100 hover:ring-offset-2">
-          <img
+          <Image
             src={
               user.avatar ??
               "https://img.daisyui.com/images/profile/demo/gordon@192.webp"
             }
+            alt="Avatar"
+            width={84}
+            height={84}
           />
         </div>
       </div>

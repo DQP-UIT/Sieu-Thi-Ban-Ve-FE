@@ -72,6 +72,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
 
           const data = await res.json();
+          console.log("Res", JSON.stringify(profile));
+          
           if (data.user) {
             // Map Google auth response to our User type
             user.id = String(data.user.id);
