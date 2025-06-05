@@ -61,6 +61,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onSuccess }) => {
       activedDay: formatMySQLDateTime(new Date()),
       // Nếu là Google account thì không gửi password
       password: data.google === 1 ? "" : data.password,
+      avatar: data.google === 1 ? undefined : data.avatar,
     };
 
     // Append all form data
@@ -344,22 +345,24 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ onSuccess }) => {
               </div>
 
               {/* Avatar */}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Avatar</span>
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="file-input file-input-bordered w-full"
-                  {...register("avatar")}
-                />
-                <label className="label">
-                  <span className="label-text-alt">
-                    PNG, JPG, GIF tối đa 2MB
-                  </span>
-                </label>
-              </div>
+              {googleValue === 0 && (
+                <div className="form-control">
+                  <label className="label">
+                    <span className="label-text">Avatar</span>
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="file-input file-input-bordered w-full"
+                    {...register("avatar")}
+                  />
+                  <label className="label">
+                    <span className="label-text-alt">
+                      PNG, JPG, GIF tối đa 2MB
+                    </span>
+                  </label>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}
