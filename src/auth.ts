@@ -65,14 +65,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ account, profile, user }) {
       if (account?.provider === "google") {
         try {
-          const res = await fetch(`${API_URL}/auth/google`, {
+          const res = await fetch(`${API_URL}/auth/oauth/google`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ profile }),
+            body: JSON.stringify(profile),
           });
 
           const data = await res.json();
-
+          console.log("Res", JSON.stringify(profile));
+          
           if (data.user) {
             // Map Google auth response to our User type
             user.id = String(data.user.id);
@@ -84,9 +85,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             user.avatar = data.user.avatar;
             user.designs = data.user.designs;
             user.accessToken = data.accessToken;
+          } else {
+            return false;
           }
 
-          return data.status === "success";
+          return true;
         } catch (error) {
           console.error("Google auth error:", error);
           return false;

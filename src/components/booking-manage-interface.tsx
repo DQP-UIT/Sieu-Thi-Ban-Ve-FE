@@ -19,7 +19,18 @@ const BookingTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
 
-  const filtered = bookings.filter(
+  // Filter bookings based on user role
+  const filteredByRole = bookings.filter((booking) => {
+    // If user role is "user", only show bookings assigned to them
+    if (session?.user.role === "user") {
+      return booking.designer?.id === Number(session.user.id);
+    }
+    // For other roles (admin, receptionist, designer), show all bookings
+    return true;
+  });
+
+  // Apply search filters
+  const filtered = filteredByRole.filter(
     (b) =>
       [b.name, b.message].some((field) =>
         field.toLowerCase().includes(filter.toLowerCase())

@@ -42,7 +42,7 @@ const FengShuiOutput = () => {
 
   return (
     <div className="flex w-full items-center justify-center bg-base-200">
-      <div className="w-full max-w-2xl rounded-lg bg-base-100 p-6 shadow-xl">
+      <div className="w-full mt-20 max-w-2xl rounded-lg bg-base-100 p-6 shadow-xl">
         <h1 className="mb-4 text-center text-3xl font-bold">
           Xem tuổi làm nhà
         </h1>
