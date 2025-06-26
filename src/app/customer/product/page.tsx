@@ -2,6 +2,7 @@
 
 import ContactCard from "@/components/contact-card";
 import ProductDetail from "@/components/design-interface";
+import { getOrCreateSessionId } from "@/lib/session";
 import { useSelectedProduct } from "@/store/product-store";
 import axios from "axios";
 import { redirect } from "next/navigation";
@@ -15,14 +16,30 @@ export default function ProductPage() {
     redirect("/customer/product/basehouse");
   }
   useEffect(() => {
-    try {
-      axios.patch(`${API_URL}/product/patch/${product.id}`);
-      console.log("Call complete");
-    } catch (error) {
-      console.error(error);
+    const trackInteraction = async () => {
+      try {
+        const sessionId = await getOrCreateSessionId();
+        await axios.post(`${API_URL}/recommendation/interact`, {
+          session_id: sessionId,
+          product_id: product.id,
+          interaction_type: "view",
+        });
+
+        console.log("Call complete", {
+          session_id: sessionId,
+          product_id: product.id,
+          interaction_type: "view",
+        });
+      } catch (error) {
+        console.error("Interaction tracking failed", error);
+      }
+    };
+
+    if (product?.id) {
+      trackInteraction();
     }
   }, [product?.id]);
-
+  
   return (
     <div className="w-full mt-12">
       <ProductDetail design={product} />
