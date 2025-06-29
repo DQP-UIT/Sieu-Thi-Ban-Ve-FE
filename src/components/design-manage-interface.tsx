@@ -85,47 +85,118 @@ const DesignsManageTable = () => {
 
   const handleOnAds = (id: number) => {
     Swal.fire({
-      title: "Bạn có chắc muốn xóa bản thiết kế này?",
+      title: "Bạn có chắc muốn đăng bài quảng cáo cho bản thiết kế này?",
       text: "Hành động này không thể hoàn tác!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Xóa",
+      confirmButtonText: "Đăng",
       cancelButtonText: "Hủy",
     }).then(async (result) => {
       if (!result.isConfirmed) return;
+
+      // Show loading modal
+      Swal.fire({
+        title: "Đang đăng bài quảng cáo...",
+        html: `
+          <div class="flex flex-col items-center gap-4">
+            <p class="text-sm text-gray-600">Vui lòng đợi trong giây lát...</p>
+            <div class="text-xs text-gray-500">
+              Hệ thống đang xử lý và đăng bài lên Facebook
+            </div>
+          </div>
+        `,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
 
       try {
         const res = await axios.post(`${API_URL}/facebook/post-product/${id}`);
         console.log("stt", res.status);
 
-        const isSuccess = res.status === 200;
+        const isSuccess = res.status === 201;
 
+        // Close loading modal
+        Swal.close();
+
+        // Show result
         await Swal.fire({
-          toast: true,
-          position: "top-end",
           icon: isSuccess ? "success" : "error",
-          title: isSuccess ? "Thành công" : "Lỗi",
-          text: isSuccess
-            ? "Đã post bài đăng thành công!"
-            : "Đã xảy ra lỗi khi đăng bài!",
-          showConfirmButton: false,
-          timer: 1500,
+          title: isSuccess ? "Đăng bài thành công!" : "Đăng bài thất bại!",
+          html: isSuccess
+            ? `
+              <div class="text-center">
+                <p class="mb-3">Bài đăng đã được chia sẻ lên Facebook thành công!</p>
+                <div class="bg-green-50 p-3 rounded-lg border border-green-200">
+                  <p class="text-sm text-green-700 mb-2">🔗 Link bài đăng:</p>
+                  <a 
+                    href="${res.data.postLink}" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="text-blue-600 hover:text-blue-800 underline text-sm break-all"
+                  >
+                    ${res.data.postLink}
+                  </a>
+                </div>
+              </div>
+            `
+            : `
+              <div class="text-center">
+                <p class="text-red-600">Đã xảy ra lỗi khi đăng bài!</p>
+                <p class="text-sm text-gray-600 mt-2">Vui lòng thử lại sau.</p>
+              </div>
+            `,
+          showConfirmButton: true,
+          confirmButtonText: isSuccess ? "Xem bài đăng" : "Đóng",
+          showCancelButton: isSuccess,
+          cancelButtonText: isSuccess ? "Đóng" : undefined,
+        }).then((result) => {
+          // If user clicks "Xem bài đăng", open the Facebook post
+          if (result.isConfirmed && isSuccess && res.data.postLink) {
+            window.open(res.data.postLink, "_blank", "noopener,noreferrer");
+          }
         });
 
-        if (isSuccess) fetchData(page);
-      } catch (error) {
+        if (isSuccess) {
+          fetchData(page);
+        }
+      } catch (error: any) {
         console.error(error);
 
+        // Close loading modal
+        Swal.close();
+
         await Swal.fire({
-          toast: true,
-          position: "top-end",
           icon: "error",
           title: "Lỗi hệ thống",
-          text: "Không thể kết nối đến máy chủ!",
-          showConfirmButton: false,
-          timer: 1500,
+          html: `
+            <div class="text-center">
+              <p class="text-red-600 mb-2">Không thể kết nối đến máy chủ!</p>
+              <div class="bg-red-50 p-3 rounded-lg border border-red-200">
+                <p class="text-sm text-red-700">
+                  ${
+                    error.response?.data?.message ||
+                    error.message ||
+                    "Lỗi không xác định"
+                  }
+                </p>
+              </div>
+              <p class="text-sm text-gray-600 mt-2">Vui lòng kiểm tra kết nối mạng và thử lại.</p>
+            </div>
+          `,
+          showConfirmButton: true,
+          confirmButtonText: "Thử lại",
+          showCancelButton: true,
+          cancelButtonText: "Đóng",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            handleOnAds(id);
+          }
         });
       }
     });
