@@ -37,7 +37,7 @@ export default function ProductPage() {
 
     if (product?.id) {
       trackInteraction();
-    }
+    } 
   }, [product?.id]);
   
   return (
